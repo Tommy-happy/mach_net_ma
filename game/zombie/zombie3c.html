@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zombie</title>
+    <link rel="stylesheet" href="../../bootstrap-5/css/bootstrap.min.css">
+    <style>
+        .allZombie{
+            position: fixed;
+            right: 0px;
+            left: 0px;
+            bottom: 100px;
+            width: 300px;
+            margin: auto;
+        }
+        @keyframes startMotion{
+            25%{content:url(./num3.png);  }
+            50%{content:url(./num2.png);}
+            75%{content:url(./num1.png);}
+        }
+        @keyframes miss{
+            0%{}
+            50%{background-color: red;
+                border-radius: 40px;
+            }
+            100%{background-color: transparent;}
+        }
+        .startCount{
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            left: 0px;
+            bottom: 0px;
+            margin: auto;
+            animation-name: startMotion;
+            animation-duration: 3s;
+        }
+        .counter{
+            /* background-color: black; */
+            border: black solid 7px;
+            width: 100px;
+            height: 100px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            border-radius: 30px;
+            line-height: 86px;
+            text-align: center;
+        }
+        .time{
+            height: 86px;
+            font-size: 40px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+        .over{
+            width: 300px;
+            height: 300px;
+            border-radius: 40px;
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            left: 0px;
+            bottom: 0px;
+            margin: auto;
+            color: white;
+            background-color: black;
+            display: none;
+        }
+        .over > div{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            left: 0px;
+            bottom: 0px;
+            margin: auto;
+            height: 75px;
+            /* line-height: 300px; */
+        }
+        .over .score{
+            margin: 0px;
+            font-size: 25px;
+            text-align: center;
+        }
+        .gameOver{
+            margin: 0px;
+            font-size: 30px;
+            text-align: center;
+        }
+        /* allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3) */
+    </style>
+</head>
+<body class="h-100">
+    <!-- <div class="position-fixed start-50 translate-middle-x vh-100"> -->
+    <div class="allZombie">
+        <!-- <div class="myRow d-flex">
+            <div class="col1"><img class="d-block" src="emptyZombie.png" alt="zombie"></div>
+            <div class="col2"><img class="d-block" src="zombie.png" alt="zombie"></div>
+            <div class="col3"><img class="d-block" src="zombie.png" alt="zombie"></div>
+        </div>
+        <div class="myRow d-flex">
+            <div class="col1"><img class="d-block" src="zombie.png" alt="zombie"></div>
+            <div class="col2"><img class="d-block" src="zombie.png" alt="zombie"></div>
+            <div class="col3"><img class="d-block" src="zombie.png" alt="zombie"></div>
+        </div> -->
+    </div>
+    <div class=" d-flex justify-content-center position-fixed bottom-0 w-100">
+        <div class="col1"><img src="shoot.png" alt="zombie"></div>
+        <div class="col2"><img src="shoot.png" alt="zombie"></div>
+        <div class="col3"><img src="shoot.png" alt="zombie"></div>
+    </div>
+    <!-- </div> -->
+    <div class="startCount"></div>
+    <div class="counter">
+        <p class="time"></p>
+    </div>
+    <div class="over">
+        <div>
+            <p class="gameOver">Game over</p>
+            <p class="score">your score : </p>
+        </div>
+        
+    </div>
+    <script>
+        let time = 30;
+        let update;
+        let startListen;
+        let score = 0;
+        document.querySelector(".time").innerHTML = 30;
+        for(let i=0;i<10;i++){
+            createZombie();
+        }
+        setTimeout(start,2400);
+        setTimeout(()=>{
+            update = setInterval(updateTime,100);
+        },2400);
+        
+        function updateTime(){
+            // console.log(time);
+            time = parseFloat(time) - 0.1;
+            if(time<=0){
+                time = 0;
+                document.removeEventListener("keydown",kill);
+                clearInterval(update);
+                over();
+            }
+            document.querySelector(".time").innerHTML = parseInt(time);
+        }
+        function start(){
+            // 要晚三秒執行
+            console.log(startListen);
+            startListen = document.addEventListener("keydown",kill);
+        }
+        function over(){
+            document.querySelector(".over").style.display = "Block";
+            document.querySelector(".score").innerHTML+=score;
+        }
+        function empty(){
+            return "empty";
+        }
+        function kill(event){
+            let allZombieDiv = document.querySelector(".allZombie");
+            let targetRow = document.querySelectorAll(".myRow")[9];
+            if(event.key == "ArrowLeft" || event.key == "A" || event.key == "a"){
+                let target = targetRow.querySelectorAll("img")[0];
+                if(target.id == "zombie"){
+                    // killed a zombie
+                    let moveY = 100;
+                    if(allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3)){
+                        moveY += parseInt(allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3));
+                    }
+                    allZombieDiv.style.transform = `translateY(${moveY}px)`;
+                    allZombieDiv.style.transitionDuration = "300ms";
+                    targetRow.querySelector("#zombie").src = targetRow.querySelectorAll("img")[1].src;
+                    targetRow.querySelector("#zombie").style.animationName = "";
+                    createZombie();
+                    score += 100;
+                }
+                else{
+                    targetRow.querySelector("#zombie").style.animationName = "miss";
+                    targetRow.querySelector("#zombie").style.animationDuration = "500ms";
+                    targetRow.querySelector("#zombie").style.animationIterationCount = "infinite";
+                    // document.removeEventListener("keydown",kill);
+                    // setTimeout(()=>{
+                    //     startListen = document.addEventListener("keydown",kill);
+                    // },1000);
+                }
+            }
+            else if(event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "s" || event.key == "S" || event.key == "w" || event.key == "W"){
+                let target = targetRow.querySelectorAll("img")[1];
+                if(target.id == "zombie"){
+                    // killed a zombie
+                    let moveY = 100;
+                    if(allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3)){
+                        moveY += parseInt(allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3));
+                    }
+                    allZombieDiv.style.transform = `translateY(${moveY}px)`;
+                    allZombieDiv.style.transitionDuration = "300ms";
+                    targetRow.querySelector("#zombie").src = targetRow.querySelectorAll("img")[0].src;
+                    targetRow.querySelector("#zombie").style.animationName = "";
+                    createZombie();
+                    score += 100;
+                }
+                else{
+                    targetRow.querySelector("#zombie").style.animationName = "miss";
+                    targetRow.querySelector("#zombie").style.animationDuration = "500ms";
+                    targetRow.querySelector("#zombie").style.animationIterationCount = "infinite";
+                    // document.removeEventListener("keydown",kill);
+                    // setTimeout(()=>{
+                    //     startListen = document.addEventListener("keydown",kill);
+                    // },1000);
+                }
+            }
+            else if(event.key == "ArrowRight" || event.key == "D" || event.key == "d"){
+                let target = targetRow.querySelectorAll("img")[2];
+                if(target.id == "zombie"){
+                    // killed a zombie
+                    let moveY = 100;
+                    if(allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3)){
+                        moveY += parseInt(allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3));
+                    }
+                    allZombieDiv.style.transform = `translateY(${moveY}px)`;
+                    allZombieDiv.style.transitionDuration = "300ms";
+                    targetRow.querySelector("#zombie").src = targetRow.querySelectorAll("img")[1].src;
+                    targetRow.querySelector("#zombie").style.animationName = "";
+                    createZombie();
+                    score += 100;
+                }
+                else{
+                    targetRow.querySelector("#zombie").style.animationName = "miss";
+                    targetRow.querySelector("#zombie").style.animationDuration = "500ms";
+                    targetRow.querySelector("#zombie").style.animationIterationCount = "infinite";
+                    // document.removeEventListener("keydown",kill);
+                    // setTimeout(()=>{
+                    //     startListen = document.addEventListener("keydown",kill);
+                    // },1000);
+                }
+            }
+        }
+        function createZombie(){
+            let pos = Math.floor(Math.random() * 3) + 1;
+            let rowZombieDiv = document.createElement("div");
+            // rowZombieDiv.class = "myRow d-flex";
+            rowZombieDiv.setAttribute("class","myRow d-flex");
+            let emptyImg1 = document.createElement("img");
+            emptyImg1.src = "emptyZombie.png";
+            let emptyImg2 = document.createElement("img");
+            emptyImg2.src = "emptyZombie.png";
+            let zombieImg = document.createElement("img");
+            zombieImg.src = "zombie.png";
+            zombieImg.id = "zombie";
+
+            if(pos==1){
+                rowZombieDiv.appendChild(zombieImg);
+                rowZombieDiv.appendChild(emptyImg1);
+                rowZombieDiv.appendChild(emptyImg2);
+            }
+            else if(pos==2){
+                rowZombieDiv.appendChild(emptyImg1);
+                rowZombieDiv.appendChild(zombieImg);
+                rowZombieDiv.appendChild(emptyImg2);
+            }
+            else if(pos==3){
+                rowZombieDiv.appendChild(emptyImg1);
+                rowZombieDiv.appendChild(emptyImg2);
+                rowZombieDiv.appendChild(zombieImg);
+            }
+            else{
+                alert("pos error");
+            }
+            let allZombieDiv = document.querySelector(".allZombie");
+            if (allZombieDiv.firstChild) {
+            allZombieDiv.insertBefore(rowZombieDiv, allZombieDiv.firstChild);
+            }
+            else {
+            allZombieDiv.appendChild(rowZombieDiv);
+            }
+        }
+        
+    </script>
+    <script src="../../bootstrap-5/js/popper.min.js"></script>
+    <script src="../../bootstrap-5/js/bootstrap.min.js"></script>
+</body>
+</html>

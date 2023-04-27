@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main page</title>
+    <link rel="stylesheet" href="./bootstrap-5/css/bootstrap.min.css">
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        body,html{
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+        body{
+            background-image: url("https://picsum.photos/id/767/1600/1000");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+        .hover_play{
+            display: none;
+        }
+        
+        .play:hover > .unhover_play{
+            display: none;
+        }
+        .play:hover > .hover_play{
+            display: block;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="top">
+        
+    </div>
+    <div class="row p-3 container text-center bg-white rounded-5 h-50 position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-around">
+        <div class="play col-7 h-75 bg-success rounded-5 d-flex flex-column align-items-center justify-content-evenly">
+            <p class="unhover_play text-white fw-bold">遊玩</p>
+            <div class="hover_play w-75">
+                <p class="text-success fw-bold p-3 m-2 bg-warning rounded-4">貪食蛇</p>
+                <p class="text-success fw-bold p-3 m-2 bg-warning rounded-4">2048</p>
+                <p class="text-success fw-bold p-3 m-2 bg-warning rounded-4 zombie"><a class="text-success" href="./game/zombie/zombieFirst.html">打殭屍</a></p>
+            </div>
+
+        </div>
+        <div class="col-4 h-75 bg-success rounded-5 d-flex align-items-center justify-content-around">
+            <p class="text-white fw-bold">看查排名</p>
+        </div>
+    </div>
+    <script>
+        // document.addEventListener("click",)
+    </script>
+    <script src="./bootstrap-5/js/popper.min.js"></script>
+    <script src="./bootstrap-5/js/bootstrap.min.js"></script>
+</body>
+</html>

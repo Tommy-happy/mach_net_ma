@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @keyframes startMotion{
+            25%{content:url(./num1.png);  }
+            50%{content:url(./num2.png);}
+            75%{content:url(./num3.png);}
+        }
+        div{
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            left: 0px;
+            bottom: 0px;
+            margin: auto;
+            animation-name: startMotion;
+            animation-duration: 3s;
+        }
+    </style>
+</head>
+<body>
+    <div></div>
+</body>
+</html>
