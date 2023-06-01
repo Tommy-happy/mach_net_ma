@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zombie</title>
-    <link rel="stylesheet" href="../../bootstrap-5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../static/bootstrap-5/css/bootstrap.min.css">
     <style>
         .allZombie{
             position: fixed;
@@ -16,9 +16,9 @@
             margin: auto;
         }
         @keyframes startMotion{
-            25%{content:url(./num3.png);  }
-            50%{content:url(./num2.png);}
-            75%{content:url(./num1.png);}
+            25%{content:url(../../../static/img/zombie/num3.png);  }
+            50%{content:url(../../../static/img/zombie/num2.png);}
+            75%{content:url(../../../static/img/zombie/num1.png);}
         }
         @keyframes miss{
             0%{}
@@ -75,23 +75,55 @@
             left: 0px;
             bottom: 0px;
             margin: auto;
-            height: 75px;
+            /* height: 75px; */
             /* line-height: 300px; */
         }
-        .over .score{
+        .over .scorep{
             margin: 0px;
             font-size: 25px;
             text-align: center;
+        }
+        .over .new_record{
+            margin: 0px;
+            font-size: 30px;
+            text-align: center;
+            color: red;
+            margin-top: 95px;
         }
         .gameOver{
             margin: 0px;
             font-size: 30px;
             text-align: center;
         }
+        .control > .restart{
+            position:fixed;
+            right: 0px;
+            top: 10px;
+            /* padding: 10px; */
+        }
+        .control > .quit{
+            position:fixed;
+            right: 13px;
+            top: 55px;
+            /* padding: 10px; */
+        }
+        body{
+            background-image: url("https://picsum.photos/id/767/1600/1000");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+        }
         /* allZombieDiv.style.transform.substring(11,allZombieDiv.style.transform.length-3) */
     </style>
 </head>
 <body class="h-100">
+    <div class="control">
+        <button type="button" class="btn btn-success restart" onclick="restart();">重新遊戲</button>
+        <button type="button" class="btn btn-success quit" onclick="goback();">退出</button>
+    </div>
+    
+
     <!-- <div class="position-fixed start-50 translate-middle-x vh-100"> -->
     <div class="allZombie">
         <!-- <div class="myRow d-flex">
@@ -106,9 +138,9 @@
         </div> -->
     </div>
     <div class=" d-flex justify-content-center position-fixed bottom-0 w-100">
-        <div class="col1"><img src="shoot.png" alt="zombie"></div>
-        <div class="col2"><img src="shoot.png" alt="zombie"></div>
-        <div class="col3"><img src="shoot.png" alt="zombie"></div>
+        <div class="col1"><img src="../../../static/img/zombie/shoot.png" alt="zombie"></div>
+        <div class="col2"><img src="../../../static/img/zombie/shoot.png" alt="zombie"></div>
+        <div class="col3"><img src="../../../static/img/zombie/shoot.png" alt="zombie"></div>
     </div>
     <!-- </div> -->
     <div class="startCount"></div>
@@ -117,12 +149,17 @@
     </div>
     <div class="over">
         <div>
+            <p class="new_record">new record!!</p>
             <p class="gameOver">Game over</p>
-            <p class="score">your score : </p>
+            
+            <p class="scorep">your score : <span class="score"></span></p>
         </div>
         
     </div>
     <script>
+        // document.querySelector(".restart").addEventListener("click", restart);
+        // document.querySelector(".quit").addEventListener("click", goback);
+
         let time = 30;
         let update;
         let startListen;
@@ -142,6 +179,7 @@
             if(time<=0){
                 time = 0;
                 document.removeEventListener("keydown",kill);
+
                 clearInterval(update);
                 over();
             }
@@ -149,12 +187,39 @@
         }
         function start(){
             // 要晚三秒執行
-            console.log(startListen);
             startListen = document.addEventListener("keydown",kill);
         }
         function over(){
+
             document.querySelector(".over").style.display = "Block";
-            document.querySelector(".score").innerHTML+=score;
+            document.querySelector(".score").innerHTML = score;
+            // 回傳成績===================================================
+            fetch("/renew_zombie_score",{
+                method:"POST",
+                headers:{"Content-Type":"text/plain"},
+                body:document.querySelector(".score").innerHTML
+            }).then(res => {
+                res_text = res.text()
+                // console.log(res_text)
+                return res_text
+            }).then(data => {
+                console.log(data);
+                if(data=="new record"){
+                    document.querySelector(".new_record").style.display = "Block";
+                }
+                else{
+                    document.querySelector(".gameOver").style.marginTop="100px"
+                    document.querySelector(".new_record").style.display = "none";
+                }
+            })
+        }
+        function goback(){
+            console.log("clicked!!")
+            window.location.href = window.origin + "/main";
+        }
+        function restart(){
+            console.log("clicked!!")
+            window.location.reload();
         }
         function empty(){
             return "empty";
@@ -181,10 +246,11 @@
                     targetRow.querySelector("#zombie").style.animationName = "miss";
                     targetRow.querySelector("#zombie").style.animationDuration = "500ms";
                     targetRow.querySelector("#zombie").style.animationIterationCount = "infinite";
-                    // document.removeEventListener("keydown",kill);
-                    // setTimeout(()=>{
-                    //     startListen = document.addEventListener("keydown",kill);
-                    // },1000);
+                    // 按錯後有一秒不能動
+                    document.removeEventListener("keydown",kill);
+                    setTimeout(()=>{
+                        startListen = document.addEventListener("keydown",kill);
+                    },800);
                 }
             }
             else if(event.key == "ArrowUp" || event.key == "ArrowDown" || event.key == "s" || event.key == "S" || event.key == "w" || event.key == "W"){
@@ -206,10 +272,11 @@
                     targetRow.querySelector("#zombie").style.animationName = "miss";
                     targetRow.querySelector("#zombie").style.animationDuration = "500ms";
                     targetRow.querySelector("#zombie").style.animationIterationCount = "infinite";
-                    // document.removeEventListener("keydown",kill);
-                    // setTimeout(()=>{
-                    //     startListen = document.addEventListener("keydown",kill);
-                    // },1000);
+                    // 按錯後有一秒不能動
+                    document.removeEventListener("keydown",kill);
+                    setTimeout(()=>{
+                        startListen = document.addEventListener("keydown",kill);
+                    },800);
                 }
             }
             else if(event.key == "ArrowRight" || event.key == "D" || event.key == "d"){
@@ -231,10 +298,11 @@
                     targetRow.querySelector("#zombie").style.animationName = "miss";
                     targetRow.querySelector("#zombie").style.animationDuration = "500ms";
                     targetRow.querySelector("#zombie").style.animationIterationCount = "infinite";
-                    // document.removeEventListener("keydown",kill);
-                    // setTimeout(()=>{
-                    //     startListen = document.addEventListener("keydown",kill);
-                    // },1000);
+                    // 按錯後有一秒不能動
+                    document.removeEventListener("keydown",kill);
+                    setTimeout(()=>{
+                        startListen = document.addEventListener("keydown",kill);
+                    },800);
                 }
             }
         }
@@ -244,11 +312,11 @@
             // rowZombieDiv.class = "myRow d-flex";
             rowZombieDiv.setAttribute("class","myRow d-flex");
             let emptyImg1 = document.createElement("img");
-            emptyImg1.src = "emptyZombie.png";
+            emptyImg1.src = "../../../static/img/zombie/emptyZombie.png"; 
             let emptyImg2 = document.createElement("img");
-            emptyImg2.src = "emptyZombie.png";
+            emptyImg2.src = "../../../static/img/zombie/emptyZombie.png";
             let zombieImg = document.createElement("img");
-            zombieImg.src = "zombie.png";
+            zombieImg.src = "../../../static/img/zombie/zombie.png";
             zombieImg.id = "zombie";
 
             if(pos==1){
@@ -279,7 +347,7 @@
         }
         
     </script>
-    <script src="../../bootstrap-5/js/popper.min.js"></script>
-    <script src="../../bootstrap-5/js/bootstrap.min.js"></script>
+    <script src="../../../static/bootstrap-5/js/bootstrap.min.js"></script>
+    <script src="../../../static/bootstrap-5/js/bootstrap.min.js"></script>
 </body>
 </html>

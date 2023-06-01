@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>踩地雷</title>
+        <style>
+            body{
+                background-image: url("https://picsum.photos/id/767/1600/1000");
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-attachment: fixed;
+                background-size: cover;
+            }
+            .game{
+                position: fixed;
+                top: 0px;
+                right: 0px;
+                left: 0px;
+                bottom: 0px;
+                margin: auto;
+                width: 500px;
+                height: 500px;
+                /* color: rgb(219, 190, 147); */
+            }
+            .boom_btn{
+                display : inline-block;
+                padding : 3px;
+                width : 40px;
+                height : 40px;
+                background-color : rgb(219, 190, 147);
+                margin: 0px 2px;
+                position: fixed;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="game"></div>
+        <div><br>
+            <span>Spent Time:</span>
+            <span class="spendTime"></span><span>s</span><br><br>
+            <span>Flag Remain: </span>
+            <span class="flag"></span><br><br>
+            <input class="start" type="button" value="start">
+        </div>
+
+        <script>
+            let boom_btn_2d;
+            let timer;
+            document.querySelector(".start").addEventListener("click",()=>{start(boom_btn_2d);});
+            function start(boom_btn_2d){
+                let startTime = Date.now();
+                timer = setInterval(()=>{
+                    document.querySelector(".spendTime").innerHTML = Math.round((Date.now()-startTime)/10)/100;
+                    // console.log( startTime);
+                },50);
+
+                boom_btn_2d = [[],[],[],[],[],[],[],[],[],[],[],[]];
+                document.querySelector(".flag").innerHTML = 10;
+                for(let i=0;i<12;i++){
+                    for(let j=0;j<12;j++){
+                        let boom_btn = document.createElement("span"); //c
+                        // boom_btn.type = "button";
+                        boom_btn.innerHTML = " ";
+                        boom_btn.classList.add("boom_btn");
+                        // boom_btn.style.display = "inline-block";
+                        // boom_btn.style.padding = "3px";
+                        // boom_btn.style.width = "40px";
+                        // boom_btn.style.height = "40px";
+                        // boom_btn.style.backgroundColor = "rgb(219, 190, 147)";
+                        boom_btn.id="i"+i+"-"+j;
+                        boom_btn.clicked = "0";
+                        // boom_btn.boom="0";
+                        boom_btn.addEventListener("click",()=>{select(boom_btn);});
+                        boom_btn.addEventListener("contextmenu",()=>{rightSelect(event,boom_btn);});
+                        // boom_btn.value += "3px";
+                        boom_btn_2d[i][j] = boom_btn;
+                    }
+                }
+                 
+                // boom_btn.style.innerHTML += " ";
+                
+                let game = document.querySelector(".game");
+                game.innerHTML = "";
+                let random_arr = [];
+                while(random_arr.length!=10){
+                    let x = parseInt(Math.random()*10)+1;
+                    let y = parseInt(Math.random()*10)+1;
+                    let same = false;
+                    for(let z=0;z<random_arr.length;z++){
+                        // console.log(random_arr[z],[x,y],random_arr[z]==[x,y]);
+                        if( JSON.stringify(random_arr[z]) == JSON.stringify([x,y]) ){
+                            same = true;
+                            break;
+                        }
+                    }
+                    if(!same){
+                        console.log(x,y);
+                        random_arr.push([x,y]);
+                        boom_btn_2d[x][y].boom="1";
+                        // boom_btn_2d[x][y].setAttribute("boom","1");
+                        // console.log(boom_btn_2d[x][y].boom);
+                        // boom_btn_2d[x][y].style.backgroundColor="red"; //-------------------------------
+                        // console.log("hi");
+                    }
+                }
+                for(let i=0;i<12;i++){
+                    boom_btn_2d[0][i].hint="1";
+                    boom_btn_2d[0][i].style.display="none";
+                    game.appendChild(boom_btn_2d[0][i]);
+                }
+                for(let i=1;i<=10;i++){
+                    boom_btn_2d[i][0].hint="1";
+                    boom_btn_2d[i][0].style.display="none";
+                    game.appendChild(boom_btn_2d[i][0]);
+                    for(let j=1;j<=10;j++){
+                        
+                        let boom_num=0;
+                        if(boom_btn_2d[i-1][j-1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i-1][j].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i-1][j+1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i][j-1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i][j+1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i+1][j-1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i+1][j].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i+1][j+1].boom=='1'){
+                            boom_num++;
+                        }
+                        
+                        
+                        boom_btn_2d[i][j].hint=boom_num;
+                        // boom_btn_2d[i][j].setAttribute("hint",boom_num);
+                        game.appendChild(boom_btn_2d[i][j]);
+                        // console.log(boom_btn_2d[i][j]);
+                    }
+                    boom_btn_2d[i][11].hint="1";
+                    boom_btn_2d[i][11].style.display="none";
+                    game.appendChild(boom_btn_2d[i][11]);
+                    game.appendChild(document.createElement("br"));
+                }
+                for(let i=0;i<12;i++){
+                    boom_btn_2d[11][i].hint="1";
+                    boom_btn_2d[11][i].style.display="none";
+                    game.appendChild(boom_btn_2d[11][i]);
+                }
+
+            }
+            function clearSurrounding(btn){
+                btn.clicked = "1";
+                btn.innerHTML = btn.hint;
+                if(btn.hint=="0"){
+                    for(let x=1;x<=10;x++){
+                        for(let y=1;y<=10;y++){
+                            if(document.querySelector(`#i${x}-${y}`).id==btn.id){
+                                if(document.querySelector(`#i${x-1}-${y-1}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x-1}-${y-1}`));
+                                }
+                                if(document.querySelector(`#i${x-1}-${y}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x-1}-${y}`));
+                                }
+                                if(document.querySelector(`#i${x-1}-${y+1}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x-1}-${y+1}`));
+                                }
+                                if(document.querySelector(`#i${x}-${y-1}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x}-${y-1}`));
+                                }
+                                if(document.querySelector(`#i${x}-${y+1}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x}-${y+1}`));
+                                }
+                                if(document.querySelector(`#i${x+1}-${y-1}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x+1}-${y-1}`));
+                                }
+                                if(document.querySelector(`#i${x+1}-${y}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x+1}-${y}`));
+                                }
+                                if(document.querySelector(`#i${x+1}-${y+1}`).clicked=="0"){
+                                    clearSurrounding(document.querySelector(`#i${x+1}-${y+1}`));
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            function select(btn){
+                // console.log(btn.boom,btn.hint);
+                // console.log(btn);
+                if(btn.innerHTML!="F"){
+                    if(btn.boom=='1'){
+                        alert("you lose!!");
+                        clearInterval(timer);
+                        for(let x=1;x<=10;x++){
+                            for(let y=1;y<=10;y++){
+                                document.querySelector(`#i${x}-${y}`).clicked = "1";
+                                if(document.querySelector(`#i${x}-${y}`).boom=="1"){
+                                    document.querySelector(`#i${x}-${y}`).style.backgroundColor = "red";
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        // btn.value = btn.hint;
+                        
+                        clearSurrounding(btn);
+                        // btn.disabled = true;
+                        let win = true;
+                        for(let x=1;x<=10;x++){
+                            for(let y=1;y<=10;y++){
+                                if(document.querySelector(`#i${x}-${y}`).boom!="1"){
+                                    if(document.querySelector(`#i${x}-${y}`).clicked=="0"){
+                                        win=false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if(win){
+                            alert("you win!!!");
+                            for(let x=1;x<=10;x++){
+                                for(let y=1;y<=10;y++){
+                                    document.querySelector(`#i${x}-${y}`).clicked = "1";
+                                    if(document.querySelector(`#i${x}-${y}`).boom=="1"){
+                                        document.querySelector(`#i${x}-${y}`).style.backgroundColor = "red";
+                                    }
+                                }
+                            }
+                            clearInterval(timer);
+                        }
+                    }
+                }
+                
+            }
+            function rightSelect(e,btn){
+                e.preventDefault();
+                // console.log(btn.value);
+                if(btn.innerHTML==" "){
+                    if(document.querySelector(".flag").innerHTML!="0"){
+                        btn.innerHTML = "F";
+                        num = parseInt(document.querySelector(".flag").innerHTML);
+                        num-=1;
+                        document.querySelector(".flag").innerHTML = num;
+                    }
+                    
+                    // console.log("if");
+                }
+                else if(btn.innerHTML=="F"){
+                    btn.innerHTML = " ";
+                    num = parseInt(document.querySelector(".flag").innerHTML);
+                    num+=1;
+                    document.querySelector(".flag").innerHTML = num;
+                    // document.querySelector(".flag").innerHTML+=1;
+                    // console.log("else");
+                }
+            }
+        </script>
+    </body>
+</html>

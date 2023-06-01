@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>register page</title>
-    <link rel="stylesheet" href="./bootstrap-5/css/bootstrap.min.css">
+    <title>login page</title>
+    <link rel="stylesheet" href="../static/bootstrap-5/css/bootstrap.min.css">
     <style>
         *{
             margin: 0px;
@@ -31,26 +31,27 @@
 </head>
 <body>
     <div class="mx-3 mt-3" id="liveAlertPlaceholder"></div>
-    <!-- <button type="button">Show live alert</button> -->
-    <form action="" class="position-fixed top-50 start-50 translate-middle bg-white w-50 py-5 rounded-5">
-        
+    
+    <form action="./login_action" class="position-fixed top-50 start-50 translate-middle bg-white w-50 py-5 rounded-5" method="POST">
         <div class="mb3 text-success">
-            <h2 class="fw-bold text-center">Register</h2>
+            <h2 class="fw-bold text-center">Login</h2>
         </div>
         <div class="mb-3 w-75 mx-auto">
             <label class="form-label text-success" for="user">User Name</label>
-            <input class="form-control bg-success text-white" id="user" type="text">
+            <input class="form-control bg-success text-white" name="user" id="user" type="text">
         </div>
         <div class="mb-3 w-75 mx-auto">
             <label class="form-label text-success" for="pwd">Password</label>
-            <input class="form-control bg-success  text-white" id="pwd" type="password">
-            <p class="form-text">already have an account? <a href="./login.html">go login</a></p>
+            <input class="form-control bg-success  text-white" name="pwd" id="pwd" type="password">
+            <p class="form-text">haven't have an account? <a href="./register">go register</a></p>
         </div>
         <div class="mx-auto">
-            <button type="button" class="d-block mx-auto btn btn-success" id="liveAlertBtn">Submit</button>
+            <button type="submit" class="d-block mx-auto btn btn-success">Submit</button>
         </div>
         
     </form>
+
+
     <script>
         const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
         const appendAlert = (message, type) => {
@@ -66,13 +67,18 @@
         }
 
         const alertTrigger = document.getElementById('liveAlertBtn')
-        if (alertTrigger) {
-        alertTrigger.addEventListener('click', () => {
-            appendAlert('Congratulation!! You have registered an account. Please go to login page to login.', 'success')
-        })
+        // if (alertTrigger) {
+        // alertTrigger.addEventListener('click', () => {
+        //     appendAlert('Congratulation!! You have registered an account. Please go to login page to login.', 'success')
+        // })
+        // }
+        msg = '{{msg}}';
+        if (msg!='') {
+            console.log(msg)
+            appendAlert(`${msg}`, 'danger')
         }
     </script>
-    <script src="./bootstrap-5/js/popper.min.js"></script>
-    <script src="./bootstrap-5/js/bootstrap.min.js"></script>
+    <script src="../static/bootstrap-5/js/popper.min.js"></script>
+    <script src="../static/bootstrap-5/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>踩地雷</title>
+        <style>
+            body{
+                background-image: url("https://picsum.photos/id/767/1600/1000");
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-attachment: fixed;
+                background-size: cover;
+            }
+            
+            .start{
+                /* font-weight: bold; */
+                font-size: 20px;
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+                color: white;
+                border-radius: 20px;
+                border: rgb(150, 46, 46) 2px solid;
+                padding: 5px 10px;
+                background-color: rgb(150, 46, 46);
+            }
+            .start:hover{
+                background-color: white;
+                /* border: white 2px solid; */
+                color: rgb(150, 46, 46);
+            }
+            .control > .restart{
+                position:fixed;
+                right: 0px;
+                top: 10px;
+                /* padding: 10px; */
+                text-align: center;
+                font-weight: bolder;
+                font-size: 20px;
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+                color: white;
+                border-radius: 20px;
+                border: rgb(150, 46, 46) 2px solid;
+                padding: 5px 10px;
+                background-color: rgb(150, 46, 46);
+            }
+            .control > .quit{
+                position:fixed;
+                right: 18px;
+                /* top: 60px; */
+                top: 10px;
+                /* padding: 10px; */
+                text-align: center;
+                font-weight: bolder;
+                font-size: 20px;
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+                color: white;
+                border-radius: 20px;
+                border: rgb(150, 46, 46) 2px solid;
+                padding: 5px 10px;
+                background-color: rgb(150, 46, 46);
+            }
+            .control>.restart:hover,  .control > .quit:hover{
+                background-color: white;
+                /* border: white 2px solid; */
+                color: rgb(150, 46, 46);
+            }
+            input[type="button"]:disabled {
+                color: rgb(150, 46, 46); /* 设置字体颜色 */
+                font-weight: bold; /* 设置字体粗细 */
+                /* 其他样式设置 */
+            }
+            .underGame{
+                margin-top: 430px;
+            }
+            .outOfCenter{
+                margin-top: 100px;
+                text-align: center;
+                overflow-x: auto;
+            }
+            .center{
+                min-width: 410px;
+                /* margin-top: 50px; */
+                color: rgb(150, 46, 46);
+                /* font-weight: bold; */
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="control">
+            <!-- <button type="button" class="restart" onclick="()=>{start(boom_btn_2d)};">重新遊戲</button> -->
+            <button type="button" class="quit" onclick="goback();">退出</button>
+        </div>
+        <div class="outOfCenter">
+            <div class="center">
+                <div class="game"></div>
+                <div class="underGame"><br>
+                    <span>Spent Time:</span>
+                    <span class="spendTime"></span><span>s</span><br><br>
+                    <span>Flag Remain: </span>
+                    <span class="flag"></span><br><br>
+                    <input class="start" type="button" value="start">
+                </div>
+            </div>
+        </div>
+        
+        
+
+        <script>
+            let boom_btn_2d;
+            let timer;
+            document.querySelector(".start").addEventListener("click",()=>{start(boom_btn_2d);});
+            function start(boom_btn_2d){
+                let startTime = Date.now();
+                clearInterval(timer);
+                timer = setInterval(()=>{
+                    document.querySelector(".spendTime").innerHTML = Math.round((Date.now()-startTime)/1000)/1;
+                    // console.log( startTime);
+                },50);
+
+                boom_btn_2d = [[],[],[],[],[],[],[],[],[],[],[],[]];
+                document.querySelector(".flag").innerHTML = 10;
+                for(let i=0;i<12;i++){
+                    for(let j=0;j<12;j++){
+                        let boom_btn = document.createElement("input");
+                        boom_btn.type = "button";
+                        boom_btn.value = " ";
+                        boom_btn.style.padding += "3px";
+                        boom_btn.style.width += "40px";
+                        boom_btn.style.height += "40px";
+                        boom_btn.id="i"+i+"-"+j;
+                        boom_btn.style.fontWeight="bold";
+                        boom_btn.style.borderRadius="8px";
+                        boom_btn.style.margin="0.5px";
+                        boom_btn.style.border="rgb(150, 46, 46) 2px solid";
+                        boom_btn.style.fontWeight="light"; // no effect
+                        boom_btn.style.fontFamily="impact";
+                        boom_btn.style.filter="brightness(0.85)";
+                        boom_btn.style.color="rgba(150, 46, 46, 0.2);"
+                        // boom_btn.boom="0";
+                        boom_btn.addEventListener("click",()=>{select(boom_btn);});
+                        boom_btn.addEventListener("contextmenu",()=>{rightSelect(event,boom_btn);});
+                        // boom_btn.value += "3px";
+                        boom_btn_2d[i][j] = boom_btn;
+                    }
+                }
+                 
+                // boom_btn.style.innerHTML += " ";
+                
+                let game = document.querySelector(".game");
+                game.innerHTML = "";
+                let random_arr = [];
+                while(random_arr.length!=10){
+                    let x = parseInt(Math.random()*10)+1;
+                    let y = parseInt(Math.random()*10)+1;
+                    let same = false;
+                    for(let z=0;z<random_arr.length;z++){
+                        // console.log(random_arr[z],[x,y],random_arr[z]==[x,y]);
+                        if( JSON.stringify(random_arr[z]) == JSON.stringify([x,y]) ){
+                            same = true;
+                            break;
+                        }
+                    }
+                    if(!same){
+                        console.log(x,y);
+                        random_arr.push([x,y]);
+                        boom_btn_2d[x][y].boom="1";
+                        // boom_btn_2d[x][y].setAttribute("boom","1");
+                        // console.log(boom_btn_2d[x][y].boom);
+                        // boom_btn_2d[x][y].style.backgroundColor="red"; //-------------------------------
+                        // console.log("hi");
+                    }
+                }
+                for(let i=0;i<12;i++){
+                    boom_btn_2d[0][i].hint="1";
+                    boom_btn_2d[0][i].style.display="none";
+                    game.appendChild(boom_btn_2d[0][i]);
+                }
+                for(let i=1;i<=10;i++){
+                    boom_btn_2d[i][0].hint="1";
+                    boom_btn_2d[i][0].style.display="none";
+                    game.appendChild(boom_btn_2d[i][0]);
+                    for(let j=1;j<=10;j++){
+                        
+                        let boom_num=0;
+                        if(boom_btn_2d[i-1][j-1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i-1][j].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i-1][j+1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i][j-1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i][j+1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i+1][j-1].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i+1][j].boom=='1'){
+                            boom_num++;
+                        }
+                        if(boom_btn_2d[i+1][j+1].boom=='1'){
+                            boom_num++;
+                        }
+                        
+                        
+                        boom_btn_2d[i][j].hint=boom_num;
+                        // boom_btn_2d[i][j].setAttribute("hint",boom_num);
+                        game.appendChild(boom_btn_2d[i][j]);
+                        // console.log(boom_btn_2d[i][j]);
+                    }
+                    boom_btn_2d[i][11].hint="1";
+                    boom_btn_2d[i][11].style.display="none";
+                    game.appendChild(boom_btn_2d[i][11]);
+                    game.appendChild(document.createElement("br"));
+                }
+                for(let i=0;i<12;i++){
+                    boom_btn_2d[11][i].hint="1";
+                    boom_btn_2d[11][i].style.display="none";
+                    game.appendChild(boom_btn_2d[11][i]);
+                }
+
+
+                // ============================================
+                let under = document.querySelector(".underGame");
+                under.style.marginTop = "20px";
+            }
+            function clearSurrounding(btn){
+                btn.disabled = true;
+                btn.value = btn.hint;
+                if(btn.hint=="0"){
+                    for(let x=1;x<=10;x++){
+                        for(let y=1;y<=10;y++){
+                            if(document.querySelector(`#i${x}-${y}`).id==btn.id){
+                                if(document.querySelector(`#i${x-1}-${y-1}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x-1}-${y-1}`));
+                                }
+                                if(document.querySelector(`#i${x-1}-${y}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x-1}-${y}`));
+                                }
+                                if(document.querySelector(`#i${x-1}-${y+1}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x-1}-${y+1}`));
+                                }
+                                if(document.querySelector(`#i${x}-${y-1}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x}-${y-1}`));
+                                }
+                                if(document.querySelector(`#i${x}-${y+1}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x}-${y+1}`));
+                                }
+                                if(document.querySelector(`#i${x+1}-${y-1}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x+1}-${y-1}`));
+                                }
+                                if(document.querySelector(`#i${x+1}-${y}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x+1}-${y}`));
+                                }
+                                if(document.querySelector(`#i${x+1}-${y+1}`).disabled==false){
+                                    clearSurrounding(document.querySelector(`#i${x+1}-${y+1}`));
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            function select(btn){
+                // console.log(btn.boom,btn.hint);
+                // console.log(btn);
+                if(btn.value!="F"){
+                    if(btn.boom=='1'){
+                        alert("you lose!!");
+                        clearInterval(timer);
+                        for(let x=1;x<=10;x++){
+                            for(let y=1;y<=10;y++){
+                                document.querySelector(`#i${x}-${y}`).disabled = true;
+                                if(document.querySelector(`#i${x}-${y}`).boom=="1"){
+                                    document.querySelector(`#i${x}-${y}`).style.backgroundColor = "red";
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        // btn.value = btn.hint;
+                        
+                        clearSurrounding(btn);
+                        // btn.disabled = true;
+                        let win = true;
+                        for(let x=1;x<=10;x++){
+                            for(let y=1;y<=10;y++){
+                                if(document.querySelector(`#i${x}-${y}`).boom!="1"){
+                                    if(!document.querySelector(`#i${x}-${y}`).disabled){
+                                        win=false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if(win){
+                            alert("you win!!!");
+                            for(let x=1;x<=10;x++){
+                                for(let y=1;y<=10;y++){
+                                    document.querySelector(`#i${x}-${y}`).disabled = true;
+                                    if(document.querySelector(`#i${x}-${y}`).boom=="1"){
+                                        document.querySelector(`#i${x}-${y}`).style.backgroundColor = "red";
+                                    }
+                                }
+                            }
+                            clearInterval(timer);
+                            renew_score(); // c
+                        }
+                    }
+                }
+                
+            }
+            function renew_score(){
+                // 已結束，要送資料到後端
+                fetch("/renew_boom_score",{
+                    method:"POST",
+                    headers:{"Content-Type":"text/plain"},
+                    body:document.querySelector(".spendTime").innerHTML
+                }).then(res => {
+                    res_text = res.text()
+                    // console.log(res_text)
+                    return res_text
+                }).then(data => {
+                    console.log(data);
+                })
+            }
+
+            function rightSelect(e,btn){
+                e.preventDefault();
+                // console.log(btn.value);
+                if(btn.value==" "){
+                    if(document.querySelector(".flag").innerHTML!="0"){
+                        btn.value = "F";
+                        num = parseInt(document.querySelector(".flag").innerHTML);
+                        num-=1;
+                        document.querySelector(".flag").innerHTML = num;
+                    }
+                    
+                    // console.log("if");
+                }
+                else if(btn.value=="F"){
+                    btn.value = " ";
+                    num = parseInt(document.querySelector(".flag").innerHTML);
+                    num+=1;
+                    document.querySelector(".flag").innerHTML = num;
+                    // document.querySelector(".flag").innerHTML+=1;
+                    // console.log("else");
+                }
+            }
+            function goback(){
+                window.location.href = window.origin + "/main";
+            }
+        </script>
+    </body>
+</html>

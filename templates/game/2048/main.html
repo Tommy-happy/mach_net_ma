@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        body{
+            background-image: url("https://picsum.photos/id/767/1600/1000");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+        .number{
+            line-height: 100px;
+            text-align: center;
+            font-size: 45px;
+            font-weight:700;
+            font-family: Arial;
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            border-radius: 10px;
+            transform: translate(0px,0px);
+            transition: transform 150ms ease-out;
+            /* transition-property:transform;
+            transition-delay: 150ms;
+            transition-timing-function: ease-out; */
+        }
+        .n2{
+            background-color: rgb(206, 195, 122);
+            color: rgb(112, 82, 48);
+        }
+        .n4{
+            background-color: rgb(180, 230, 159);
+            color: rgb(112, 82, 48);;
+        }
+        .n8{
+            background-color: rgb(243, 201, 105);
+            color: rgb(112, 82, 48);
+        }
+        .n16{
+            background-color: rgb(192, 204, 125);
+            color: rgb(71, 53, 32);
+        }
+        .n32{
+            background-color: rgb(87, 71, 65);
+            color: rgb(255, 255, 255);
+        }
+        .n64{
+            background-color: rgb(87, 131, 30);
+            color: rgb(255, 255, 255);
+        }
+        .n128{
+            background-color: rgb(187, 105, 39);
+            color: rgb(255, 255, 255);
+        }
+        .n256{
+            background-color: rgb(184, 86, 56);
+            color: rgb(255, 255, 255);
+        }
+        .n512{
+            background-color: rgb(202, 61, 61);
+            color: rgb(255, 255, 255);
+        }
+        .container{
+            margin-top: 80px;
+            display: grid;
+            grid-template-rows: 100px 100px 100px 100px;
+            grid-template-columns: 100px 100px 100px 100px;
+            background-color:rgb(165, 147, 119);
+            grid-gap: 20px;
+            border: 10px rgb(165, 147, 119) solid;
+            border-radius: 20px;
+            width: 460px;
+            margin-left: auto;
+            margin-right: auto;
+            /* opacity: 0.6; */
+        }
+        #scoreContainer{
+            text-align: center;
+            font-size: 35px;
+            font-weight:700;
+            font-family: Arial;
+            margin-top: 40px;
+        }
+        .over{
+            display: none;
+            text-align: center;
+        }
+        .over>p{
+            position: relative;
+            bottom: 280px;
+            /* right: 0px; */
+            /* left: 0px; */
+            /* margin: auto; */
+            text-align: center;
+            font-size: 70px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            color: rgb(150, 46, 46);
+        }
+        .over>button{
+            position: relative;
+            bottom: 260px;
+            /* right: 0px; */
+            /* left: 0px; */
+            /* margin: auto; */
+            text-align: center;
+            font-weight: bolder;
+            font-size: 20px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            color: rgb(150, 46, 46);
+            border-radius: 20px;
+            border: white 2px solid;
+            padding: 5px 10px;
+        }
+        .over>button:hover{
+            background-color: rgb(150, 46, 46);
+            border: rgb(150, 46, 46) 2px solid;
+            color: white;
+        }
+        
+        /* #test{
+            grid-area:2 / 2 / 3 / 3;;
+        } */
+        .stop_button{
+            display: none;
+        }
+        .control > .restart{
+            position:fixed;
+            right: 0px;
+            top: 10px;
+            /* padding: 10px; */
+            text-align: center;
+            font-weight: bolder;
+            font-size: 20px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            color: white;
+            border-radius: 20px;
+            border: rgb(150, 46, 46) 2px solid;
+            padding: 5px 10px;
+            background-color: rgb(150, 46, 46);
+        }
+        .control > .quit{
+            position:fixed;
+            right: 18px;
+            top: 60px;
+            /* padding: 10px; */
+            text-align: center;
+            font-weight: bolder;
+            font-size: 20px;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            color: white;
+            border-radius: 20px;
+            border: rgb(150, 46, 46) 2px solid;
+            padding: 5px 10px;
+            background-color: rgb(150, 46, 46);
+        }
+        .control>.restart:hover,  .control > .quit:hover{
+            background-color: white;
+            /* border: white 2px solid; */
+            color: rgb(150, 46, 46);
+        }
+    </style>
+</head>
+<body>
+    <div class="control">
+        <button type="button" class="restart" onclick="restart();">重新遊戲</button>
+        <button type="button" class="quit" onclick="goback();">退出</button>
+    </div>
+    <!-- #1F105E -->
+    <!-- <span class="number n2">2</span>
+    <span class="number n4">4</span>
+    <span class="number n8">8</span>
+    <span class="number n16">16</span>
+    <span class="number n32">32</span>
+    <span class="number n64">64</span>
+    <span class="number n128">128</span>
+    <span class="number n256">256</span>
+    <span class="number n512">512</span> -->
+    <p id="scoreContainer">score: <span class="score"></span></p>
+
+    <div class="container">
+
+    </div>
+    <div class="over">
+        <p>GAME OVER!</p>
+        <button type="button" onclick="start();">重新開始</button>
+    </div>
+
+    <button class="stop_button" type="button" onclick="stop();">stop</button>
+    <script>
+        let game_board = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
+        let move
+        let score = 0;
+        let score_span = document.querySelector(".score");
+        score_span.innerHTML = score;
+        start();
+
+
+        function start(){
+            score=0;
+            let score_span = document.querySelector(".score");
+            score_span.innerHTML = score;
+            game_board = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
+
+            let container = document.querySelector(".container");
+            container.innerHTML = "";
+            container.style.opacity = "1";
+            let over = document.querySelector(".over");
+            over.style.display = "none";
+
+            add_in_ramdon_position(1,2);// num value ---------------
+            move = document.addEventListener("keydown",move_action)
+                        
+        }
+        function stop(){
+            document.removeEventListener("keydown",move_action);
+            let container = document.querySelector(".container");
+            container.style.opacity = "0.6";
+            let over = document.querySelector(".over");
+            over.style.display = "block";
+
+            // 已結束，要送資料到後端
+            fetch("/renew_2048_score",{
+                method:"POST",
+                headers:{"Content-Type":"text/plain"},
+                body:document.querySelector(".score").innerHTML
+            }).then(res => {
+                res_text = res.text()
+                // console.log(res_text)
+                return res_text
+            }).then(data => {
+                console.log(data);
+                // if(data=="new record"){
+                    // document.querySelector(".new_record").style.display = "Block";
+                // }
+                // else{
+                    // document.querySelector(".gameOver").style.marginTop="100px"
+                    // document.querySelector(".new_record").style.display = "none";
+                // }
+            })
+            
+
+        }
+        
+        // 創一個新的方塊在指定位置
+        function add_number(num,row,col){
+            span = document.createElement("span");
+            span.innerHTML = num;
+            span.setAttribute("class",`number n${num}`)
+            span.setAttribute("id",`p${row}${col}`)
+            // span.class = `number n${num}`;
+            span.style.gridArea = `${row} / ${col} / ${row+1} / ${col+1}`;
+            container = document.querySelector(".container");
+            container.appendChild(span);
+        }
+
+        // 新增指定數量和數字大小的方塊在隨機位置
+        function add_in_ramdon_position(num,value){
+            start_num = num;
+            // console.log(Math.floor(Math.random()*4+1))
+            while(true){
+                row = Math.floor(Math.random()*4+1);
+                col = Math.floor(Math.random()*4+1);
+                if(game_board[row][col]==0){
+                    game_board[row][col] = value;
+                    add_number(2,row,col);
+                    start_num -= 1;
+                }
+                if(start_num == 0){break;}
+            }
+        }
+
+        // 按上下左右時的動作
+        function move_action(){
+            // console.log(event.key);
+            moved=false;
+            if(event.key=="ArrowUp"){
+                for(let i=1;i<=4;i++){
+                    for(let j=2;j<=4;j++){
+                        // 判斷有沒有方塊
+                        if(game_board[j][i]!=0){
+                            // 2nd row
+                            if(j==2){
+                                let up_guide = try_up(j,i,1);
+                                let up_time = up_guide.uptime;
+                                let double = up_guide.double;
+                                // console.log(up_time,double);
+                                if(up_time!=0){
+                                    moved = true;
+                                    move_block_to(j ,i ,j-up_time,i,double);
+                                }
+                            }
+                            // 3rd row
+                            else if(j==3){
+                                let up_guide = try_up(j,i,2);
+                                let up_time = up_guide.uptime;
+                                let double = up_guide.double;
+                                // console.log(up_time,double);
+                                if(up_time!=0){
+                                    moved = true;
+                                    move_block_to(j ,i ,j-up_time,i,double);
+                                }
+                            }
+                            else if(j==4){
+                                let up_guide = try_up(j,i,3);
+                                let up_time = up_guide.uptime;
+                                let double = up_guide.double;
+                                // console.log(up_time,double);
+                                if(up_time!=0){
+                                    moved = true;
+                                    move_block_to(j ,i ,j-up_time,i,double);
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+                // 新增方塊
+                if(moved){
+                    add_in_ramdon_position(1,2); //num value
+                    score+=10;
+                    let score_span = document.querySelector(".score");
+                    score_span.innerHTML = score;
+                }
+            }
+            else if(event.key=="ArrowLeft"){
+                for(let i=1;i<=4;i++){
+                    for(let j=2;j<=4;j++){
+                        // 判斷有沒有方塊
+                        if(game_board[i][j]!=0){
+                            // 2nd row
+                            if(j==2){
+                                let left_guide = try_left(i,j,1);
+                                let left_time = left_guide.lefttime;
+                                let double = left_guide.double;
+                                // console.log(up_time,double);
+                                if(left_time!=0){
+                                    moved = true;
+                                    move_block_to(i ,j ,i,j-left_time,double);
+                                }
+                            }
+                            // 3rd row
+                            else if(j==3){
+                                let left_guide = try_left(i,j,2);
+                                let left_time = left_guide.lefttime;
+                                let double = left_guide.double;
+                                // console.log(up_time,double);
+                                if(left_time!=0){
+                                    moved = true;
+                                    move_block_to(i ,j ,i,j-left_time,double);
+                                }
+                            }
+                            else if(j==4){
+                                let left_guide = try_left(i,j,3);
+                                let left_time = left_guide.lefttime;
+                                let double = left_guide.double;
+                                // console.log(up_time,double);
+                                if(left_time!=0){
+                                    moved = true;
+                                    move_block_to(i ,j ,i,j-left_time,double);
+                                }
+                            }
+                        }
+                    }
+                }
+                // 新增方塊
+                if(moved){
+                    add_in_ramdon_position(1,2); //num value
+                    score+=10;
+                    let score_span = document.querySelector(".score");
+                    score_span.innerHTML = score;
+                }
+            }
+            else if(event.key=="ArrowRight"){
+                for(let i=1;i<=4;i++){
+                    for(let j=3;j>=1;j--){
+                        // 判斷有沒有方塊
+                        if(game_board[i][j]!=0){
+                            // 2nd row
+                            if(j==3){
+                                let right_guide = try_right(i,j,1);
+                                let right_time = right_guide.righttime;
+                                let double = right_guide.double;
+                                // console.log(up_time,double);
+                                if(right_time!=0){
+                                    moved = true;
+                                    move_block_to(i ,j ,i,j+right_time,double);
+                                }
+                            }
+                            // 3rd row
+                            else if(j==2){
+                                let right_guide = try_right(i,j,2);
+                                let right_time =right_guide.righttime;
+                                let double = right_guide.double;
+                                // console.log(up_time,double);
+                                if(right_time!=0){
+                                    moved = true;
+                                    move_block_to(i ,j ,i,j+right_time,double);
+                                }
+                            }
+                            else if(j==1){
+                                let right_guide = try_right(i,j,3);
+                                let right_time = right_guide.righttime;
+                                let double = right_guide.double;
+                                // console.log(up_time,double);
+                                if(right_time!=0){
+                                    moved = true;
+                                    move_block_to(i ,j ,i,j+right_time,double);
+                                }
+                            }
+                        }
+                    }
+                }
+                // 新增方塊
+                if(moved){
+                    add_in_ramdon_position(1,2); //num value
+                    score+=10;
+                    let score_span = document.querySelector(".score");
+                    score_span.innerHTML = score;
+                }
+                
+            }
+            else if(event.key=="ArrowDown"){
+                for(let i=1;i<=4;i++){
+                    for(let j=3;j>=1;j--){
+                        // 判斷有沒有方塊
+                        if(game_board[j][i]!=0){
+                            // 2nd row
+                            if(j==1){
+                                let down_guide = try_down(j,i,3);
+                                let down_time = down_guide.downtime;
+                                let double = down_guide.double;
+                                if(down_time!=0){
+                                    moved = true;
+                                    move_block_to(j ,i ,j+down_time,i,double);
+                                }
+                            }
+                            // 3rd row
+                            else if(j==2){
+                                let down_guide = try_down(j,i,2);
+                                let down_time = down_guide.downtime;
+                                let double = down_guide.double;
+                                if(down_time!=0){
+                                    moved = true;
+                                    move_block_to(j ,i ,j+down_time,i,double);
+                                }
+                            }
+                            else if(j==3){
+                                let down_guide = try_down(j,i,1);
+                                let down_time = down_guide.downtime;
+                                let double = down_guide.double;
+                                if(down_time!=0){
+                                    moved = true;
+                                    move_block_to(j ,i ,j+down_time,i,double);
+                                }
+                            }
+                        }
+                    }
+                }
+                // 新增方塊
+                if(moved){
+                    add_in_ramdon_position(1,2); //num value
+                    score+=10;
+                    let score_span = document.querySelector(".score");
+                    score_span.innerHTML = score;
+                }
+            }
+
+            // 判斷遊戲有沒有結束
+            if(is_end()){
+                stop();
+            }
+        }
+
+        // 判斷遊戲有沒有結束
+        function is_end(){
+            for(let i=1;i<=4;i++){
+                for(let j=1;j<=4;j++){
+                    if(game_board[i][j]==0 || game_board[i][j]==game_board[i][j+1] || game_board[i][j]==game_board[i][j-1] || game_board[i][j]==game_board[i+1][j] || game_board[i][j]==game_board[i-1][j]){
+                        return false;
+                    }
+                    if(game_board[i][j] == 512){
+                        return true
+                    }
+                }
+            }
+            return true;
+        }
+
+        // 移動方塊位置
+        function move_block_to(o_row,o_col,n_row,n_col, change_num){
+            // 移動到指定位置，沒有移動就不要用此fucntion
+            // 更改ID
+            // change_num = true 時值要X2
+            let moved_block = document.querySelector(`#p${o_row}${o_col}`);
+            if(change_num){
+                delete_block(n_row,n_col);
+                moved_block.innerHTML  = parseInt(moved_block.innerHTML)*2;
+                moved_block.setAttribute("class",`number n${moved_block.innerHTML}`);
+                game_board[n_row][n_col] = game_board[o_row][o_col] * 2;
+            }
+            else{
+                game_board[n_row][n_col] = game_board[o_row][o_col];
+            }
+            game_board[o_row][o_col] = 0;
+            
+            moved_block.setAttribute("id",`p${n_row}${n_col}`);
+            // moved_block.style.gridArea = `${n_row} / ${n_col} / ${n_row+1} / ${n_col+1}`;
+            let y = (n_row-o_row)*120;
+            let x = (n_col-o_col)*120;
+            console.log("x: ",x, "y: ",y);
+            let com = window.getComputedStyle(moved_block);
+            let transValue = com.getPropertyValue("transform");
+            let arrValue = transValue.replace("matrix(","").replace(")","").split(",");
+            console.log(arrValue)
+            x += parseInt(arrValue[4]);
+            y += parseInt(arrValue[5]);
+            moved_block.style.transform = `translate(${x}px,${y}px)`;
+        }
+        
+        // 刪除方塊
+        function delete_block(row,col){
+            game_board[row][col] = 0;
+            document.querySelector(`#p${row}${col}`).remove();
+        }
+
+        // 判斷能往上多少
+        function try_up(row,col,times){
+            double = false;
+            up = 0;
+            for(let i=1;i<=times;i++){
+                if(game_board[row-i][col] == 0){
+                    up +=1;
+                }
+                else if(game_board[row-i][col] == game_board[row][col]){
+                    up+=1;
+                    double = true;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
+            return {
+                "uptime":up,
+                "double":double
+            }
+        }
+        
+        // 判斷能往左多少
+        function try_left(row,col,times){
+            double = false;
+            left = 0;
+            for(let i=1;i<=times;i++){
+                if(game_board[row][col-i] == 0){
+                    left +=1;
+                }
+                else if(game_board[row][col-i] == game_board[row][col]){
+                    left+=1;
+                    double = true;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
+            return {
+                "lefttime":left,
+                "double":double
+            }
+        }
+
+        // 判斷能往右多少
+        function try_right(row,col,times){
+            double = false;
+            right = 0;
+            for(let i=1;i<=times;i++){
+                if(game_board[row][col+i] == 0){
+                    right +=1;
+                }
+                else if(game_board[row][col+i] == game_board[row][col]){
+                    right+=1;
+                    double = true;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
+            return {
+                "righttime":right,
+                "double":double
+            }
+        }
+
+        // 判斷能往下多少
+        function try_down(row,col,times){
+            double = false;
+            down = 0;
+            for(let i=1;i<=times;i++){
+                if(game_board[row+i][col] == 0){
+                    down +=1;
+                }
+                else if(game_board[row+i][col] == game_board[row][col]){
+                    down+=1;
+                    double = true;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
+            return {
+                "downtime":down,
+                "double":double
+            }
+        }
+
+        function goback(){
+            console.log("clicked!!")
+            window.location.href = window.origin + "/main";
+        }
+        function restart(){
+            console.log("clicked!!")
+            window.location.reload();
+        }
+
+
+    </script>
+</body>
+</html>
